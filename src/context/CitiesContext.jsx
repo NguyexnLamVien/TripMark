@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  createContext,
-  useContext,
-  useReducer,
-} from "react";
+import { useEffect, createContext, useReducer, useContext } from "react";
 
 const initState = {
   cities: [],
