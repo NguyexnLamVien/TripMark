@@ -1,50 +1,54 @@
 import { Navigate, Route, Routes } from "react-router";
+import { lazy, Suspense } from "react";
 
 import PageNotFound from "./page/PageNotFound";
-import Product from "./page/Product";
-import Pricing from "./page/Pricing";
 import Login from "./page/Login";
-import AppLayout from "./page/AppLayout";
-import HomePage from "./page/HomePage";
-import MapLayout from "./page/MapLayout";
-import CitiesList from "./components/SitiesList";
-import CountryList from "./components/CountryList";
-import City from "./components/City";
-import Form from "./components/Form";
 import { CitiesProvider } from "./context/CitiesContext";
 import { FakeAuthProvider } from "./context/FakeAuthContext";
 import ProtectedRoute from "./page/ProtectedRoute";
+import Spinner from "./components/Spinner";
+
+const HomePage = lazy(() => import("./page/HomePage"));
+const Product = lazy(() => import("./page/Product"));
+const Pricing = lazy(() => import("./page/Pricing"));
+const AppLayout = lazy(() => import("./page/AppLayout"));
+const MapLayout = lazy(() => import("./page/MapLayout"));
+const CitiesList = lazy(() => import("./components/CitiesList"));
+const CountryList = lazy(() => import("./components/CountryList"));
+const City = lazy(() => import("./components/City"));
+const Form = lazy(() => import("./components/Form"));
 
 function App() {
   return (
     <FakeAuthProvider>
       <CitiesProvider>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path="product" element={<Product />} />
-            <Route path="pricing" element={<Pricing />} />
-            <Route path="login" element={<Login />} />
-          </Route>
-          <Route
-            path="/app"
-            element={
-              <ProtectedRoute>
-                <MapLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="cities" replace={true} />} />
-            <Route path="cities" element={<CitiesList />} />
-            <Route path="cities/:id" element={<City />} />
-            <Route path="countries" element={<CountryList />} />
-            <Route path="form" element={<Form />} />
-          </Route>
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
+        <Suspense fallback={<Spinner />}>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route index element={<HomePage />} />
+              <Route path="product" element={<Product />} />
+              <Route path="pricing" element={<Pricing />} />
+              <Route path="login" element={<Login />} />
+            </Route>
+            <Route
+              path="/app"
+              element={
+                <ProtectedRoute>
+                  <MapLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="cities" replace={true} />} />
+              <Route path="cities" element={<CitiesList />} />
+              <Route path="cities/:id" element={<City />} />
+              <Route path="countries" element={<CountryList />} />
+              <Route path="form" element={<Form />} />
+            </Route>
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </Suspense>
       </CitiesProvider>
     </FakeAuthProvider>
   );
 }
-
 export default App;
